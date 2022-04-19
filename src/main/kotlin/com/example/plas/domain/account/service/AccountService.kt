@@ -20,6 +20,6 @@ class AccountService(
             else -> temp
         }
 
-        return Account.Token(account.id, jwtProvider.createAccessToken(account))
+        return Account.Token(jwtProvider.createAccessToken(account))
     }
 }

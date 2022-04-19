@@ -11,19 +11,10 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/api")
 class AccountController(
-    private val accountService: AccountService,
-    private val cookieUtils: CookieUtils
+    private val accountService: AccountService
 ) {
     @PostMapping("/login")
-    fun login(@RequestBody loginInformation: Account.LoginInformation, httpResponse: HttpServletResponse): ResponseEntity<Long> {
-        val token = accountService.loginByOAuth(loginInformation)
-        val cookie = cookieUtils.buildCookieIncludeToken(token.accessToken)
-        httpResponse.setHeader("Set-Cookie", cookie.toString())
-        httpResponse.setHeader("Access-Control-Allow-Headers",
-            "Date, Content-Type, Accept, X-Requested-With, Authorization, From, X-Auth-Token, Request-Id");
-        httpResponse.setHeader("Access-Control-Expose-Headers", "Set-Cookie");
-        httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-//        httpResponse.addHeader("Set-Cookie", cookie.toString())
-        return ResponseEntity.status(HttpStatus.OK).body(token.id)
+    fun login(@RequestBody loginInformation: Account.LoginInformation, httpResponse: HttpServletResponse): ResponseEntity<Account.Token> {
+        return ResponseEntity.status(HttpStatus.OK).body(accountService.loginByOAuth(loginInformation))
     }
 }

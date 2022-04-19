@@ -24,11 +24,11 @@ class Account(
 
     data class LoginInformation(
         val name: String,
-        val email: String
+        val email: String,
+        val code: String
     )
 
     data class Token(
-        val id: Long,
         val accessToken: String
     )
 }
