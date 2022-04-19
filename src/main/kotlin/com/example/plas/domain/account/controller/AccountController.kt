@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/account")
 class AccountController(
     private val accountService: AccountService
 ) {
-    @PostMapping("/login")
+    @PostMapping
     fun login(@RequestBody loginInformation: Account.LoginInformation, httpResponse: HttpServletResponse): ResponseEntity<Account.Token> {
         return ResponseEntity.status(HttpStatus.OK).body(accountService.loginByOAuth(loginInformation))
     }
