@@ -1,6 +1,7 @@
 package com.example.plas.security
 
 import com.example.plas.domain.account.entity.Account
+import com.example.plas.domain.account.repository.AccountRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -15,7 +16,8 @@ import java.util.function.Function
 @Component
 class JwtProvider(
     @Value("\${jwt.accessTokenExpiration}") private val accessExpiration: Long,
-    @Value("\${jwt.secret}") private val secretKey: String
+    @Value("\${jwt.secret}") private val secretKey: String,
+    private val accountRepository: AccountRepository
 ) {
     companion object {
         const val BEARER_PREFIX = "Bearer "
@@ -48,6 +50,11 @@ class JwtProvider(
     fun getIdFromToken(token: String): Long {
         val token = removePrefix(token)
         return getClaimFromToken(token) { obj: Claims -> obj.subject }.toLong()
+    }
+
+    fun getAccountFromToken(token: String): Account? {
+        val id = getIdFromToken(token)
+        return accountRepository.findAccountById(id)
     }
 
     fun <T> getClaimFromToken(token: String, claimsResolver: Function<Claims, T>): T {

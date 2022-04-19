@@ -13,6 +13,10 @@ class Research() {
         fun saveResearchDtoToResearch(saveResearchDto: SaveResearchDto, account: Account): Research {
             return Research(saveResearchDto.researchName, saveResearchDto.researchStartDate, account)
         }
+
+        fun researchToSendResearchDto(research: Research): SendResearchDto {
+            return SendResearchDto(research.id!!, research.researchName, research.researchStartDate)
+        }
     }
 
     constructor(researchName: String, researchStartDate: LocalDate, account: Account): this() {
@@ -44,9 +48,5 @@ class Research() {
         var researchStartDate: LocalDate
     )
 
-    data class SendResearchDto(
-        var id: Long,
-        var researchName: String,
-        var researchStartDate: LocalDate
-    )
+
 }
