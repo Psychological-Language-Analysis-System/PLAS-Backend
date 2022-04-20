@@ -11,11 +11,14 @@ import javax.persistence.*
 class Essay() {
     companion object {
         fun dtoToEssay(dto: SaveEssayDto): Essay {
-            return Essay(dto.essayName, dto.fileName, dto.memo, dto.essayAuthor, dto.essayFrom, dto.essayType)
+            return Essay(dto.essayName, dto.memo, dto.essayAuthor, dto.essayFrom, dto.essayType)
+        }
+        fun essayToDto(essay: Essay): SendEssayDto {
+            return SendEssayDto(essay.id, essay.essayName)
         }
     }
 
-    constructor(essayName: String?, fileName: String?, memo: String?, essayAuthor: String?, essayFrom: String?, essayType: String?): this() {
+    constructor(essayName: String?, memo: String?, essayAuthor: String?, essayFrom: String?, essayType: String?): this() {
         this.essayName = essayName
         this.fileName = fileName
         this.memo = memo
@@ -35,26 +38,26 @@ class Essay() {
     var essayType: String? = null
     var posCsvFileName: String? = null
     var psyPosCsvFileName: String? = null
+    var essayContent: String? = null
 
     @ManyToOne
      var research: Research? = null
 
-    @OneToMany(mappedBy = "essay")
-    var posCountingList: MutableList<PosCounting>? = mutableListOf()
+    @OneToOne
+    lateinit var posCounting: PosCounting
 
-    @OneToMany(mappedBy = "essay")
-    var psyPosCountingList: MutableList<PsyPosCounting>? = mutableListOf()
+    @OneToOne
+    lateinit var psyPosCounting: PosCounting
 
     data class SaveEssayDto(
         var essayName: String,
-        var fileName: String?,
         var memo: String?,
         var essayAuthor: String?,
         var essayFrom: String?,
         var essayType: String?,
         var researchId: Long?,
         var essayContent: String?,
-        var essayContentByFile: File?
+        var file: MultipartFile?
     )
 
     data class SendEssayDto(

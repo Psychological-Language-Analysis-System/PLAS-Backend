@@ -6,6 +6,7 @@ import javax.persistence.*
 
 @Entity
 class PosCounting {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = 0
@@ -88,9 +89,9 @@ class PosCounting {
     var eid: Int? = null
     var rid: Int? = null
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     lateinit var essay: Essay
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     lateinit var research: Research
 }

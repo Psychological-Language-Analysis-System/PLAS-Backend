@@ -1,31 +1,33 @@
 package com.example.plas.domain.essay.controller
 
+import com.example.plas.domain.counting.entity.PosCounting
+import com.example.plas.domain.counting.entity.PosCountingDto
+import com.example.plas.domain.counting.entity.PsyPosCountingDto
 import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.essay.service.EssayService
-import io.swagger.annotations.ApiOperation
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/essay")
 class EssayPageController(
     private val essayService: EssayService
 ) {
     @Operation(summary = "test hello", description = "esssssay")
-    @GetMapping("EssayPage/{researchId}")
-    fun essayPage(@PathVariable researchId: Long, pageable: Pageable): ResponseEntity<Page<Essay.SendEssayDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(essayService.findEssayPageByResearch(researchId, pageable))
+    @GetMapping("/{researchId}")
+    fun essayPage(@PathVariable researchId: Long, page: Int): ResponseEntity<Page<Essay.SendEssayDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.findEssayPageByResearch(researchId, page))
     }
 
-    @PostMapping("saveEssay/{researchId}")
-    fun saveEssay(@PathVariable researchId: Long, @RequestBody dto: Essay.SaveEssayDto): ResponseEntity<String> {
-        essayService.saveEssay(dto)
-        return ResponseEntity.status(HttpStatus.OK).body("Success")
+    @PostMapping("/{researchId}")
+    fun saveEssay(@PathVariable researchId: Long, dto: Essay.SaveEssayDto): ResponseEntity<Essay.SendEssayDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.saveEssay(dto))
     }
 
 //    @ApiOperation(value = "essay pos 분석 결과 csv파일로 저장")
@@ -40,6 +42,15 @@ class EssayPageController(
         response.outputStream.close()
     }
 
+    @GetMapping("/pos/{essayId}")
+    fun getPosData(@PathVariable essayId: Long): ResponseEntity<PosCountingDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.getPosData(essayId))
+    }
+
+    @GetMapping("/psyPos/{essayId}")
+    fun getPsyposData(@PathVariable essayId: Long): ResponseEntity<PsyPosCountingDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.getPsyposData(essayId))
+    }
 //    @ApiOperation(value = "essay psypos 분석 결과 csv파일로 저장")
     @GetMapping("/downloadPsyPos/{essayId}")
     fun getPsyPosCsvFile(@PathVariable essayId: Long, response: HttpServletResponse) {
@@ -50,5 +61,6 @@ class EssayPageController(
         response.outputStream.write(psyPosCsvFile)
         response.outputStream.flush()
         response.outputStream.close()
+
     }
 }

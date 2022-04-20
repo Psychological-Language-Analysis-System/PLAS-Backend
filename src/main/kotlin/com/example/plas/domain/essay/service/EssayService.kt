@@ -1,15 +1,17 @@
 package com.example.plas.domain.essay.service
 
+import com.example.plas.domain.counting.entity.PosCounting
+import com.example.plas.domain.counting.entity.PosCountingDto
+import com.example.plas.domain.counting.entity.PsyPosCountingDto
+import com.example.plas.domain.counting.repository.PosCountingRepository
+import com.example.plas.domain.counting.repository.PsyPosCountingRepository
 import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.essay.repository.EssayRepository
-import com.example.plas.domain.research.entity.Research
 import com.example.plas.domain.research.repository.ResearchRepository
 import org.apache.commons.io.FileUtils
-import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.FileSystemResource
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.ResourceUtils
@@ -20,55 +22,61 @@ import java.time.LocalDateTime
 @Service
 class EssayService(
     private val essayRepository: EssayRepository,
-    private val researchRepository: ResearchRepository
+    private val researchRepository: ResearchRepository,
+    private val posCountingRepository: PosCountingRepository,
+    private val psyPosCountingRepository: PsyPosCountingRepository,
+    @Value("\${result.save.out}") private val OUT_PATH: String
 ) {
 
+    // TODO: 2022/04/20 csvDto만들어 주기
     fun getPosCsvFile(essayId: Long): ByteArray {
         val essay = essayRepository.findEssayById(essayId)!!
-        return FileUtils.readFileToByteArray(File("/home/idpl/plas/plas2/plas/build/libs/result/" + essay.posCsvFileName + ".csv"))
+        return FileUtils.readFileToByteArray(File(OUT_PATH + essay.posCsvFileName + ".csv"))
     }
 
     fun getPsyPosCsvFile(essayId: Long): ByteArray {
         val essay = essayRepository.findEssayById(essayId)!!
-        return FileUtils.readFileToByteArray(File("/home/idpl/plas/plas2/plas/build/libs/result/" + essay.psyPosCsvFileName + ".csv"))
+        return FileUtils.readFileToByteArray(File(OUT_PATH + essay.psyPosCsvFileName + ".csv"))
     }
 
-    fun findEssayPageByResearch(id: Long, pageable: Pageable): Page<Essay.SendEssayDto> {
-        val research = getResearch(id)
-        val page = if (pageable.pageNumber === 0) 0 else pageable.pageNumber - 1
+    @Transactional
+    fun getPosData(essayId: Long):PosCountingDto {
+        return PosCountingDto(posCountingRepository.findById(essayId).orElseThrow())
+    }
+
+    fun getPsyposData(essayId: Long):PsyPosCountingDto {
+        return PsyPosCountingDto(psyPosCountingRepository.findById(essayId).orElseThrow())
+    }
+
+    fun findEssayPageByResearch(id: Long, page: Int): Page<Essay.SendEssayDto> {
+        val research = researchRepository.findById(id).orElseThrow()
         return essayRepository.findAllEssayByResearch(research, PageRequest.of(page, 10))
     }
 
     //@Transactional
-    fun saveEssay(dto: Essay.SaveEssayDto): Essay {
+    fun saveEssay(dto: Essay.SaveEssayDto): Essay.SendEssayDto {
         // 1. essayContent와 essayContentByFile 중에 있는 데이터를 파일로 만든다.
         // 2. file이 들어왔다면 그대로 사용. content가 있다면, 이를 파일로 만들기
         // 3. 파이썬 파일에 input.txt의 경로를 설정해서 주기
 
-        val file = dto.essayContentByFile ?: convertStringToFile(dto.essayName, dto.essayContent)
-        dto.fileName = file.name
-        println(file.canonicalPath)
-
-        val research = getResearch(dto.researchId!!)
+        val research = researchRepository.findResearchById(dto.researchId!!) ?: throw RuntimeException()
         var essay = Essay.dtoToEssay(dto)
         essay.research = research
 
-	essay = essayRepository.save(essay) 
+        essay.essayContent = dto.essayContent ?: String(dto.file!!.bytes)
+        val file = convertStringToFile(essay)
+        essay.fileName = file.name
+        essay = essayRepository.save(essay)
+
         runAnalyzeByPython(essay.fileName!!, research.id!!, essay.id!!)
 
-        essay.posCsvFileName = "pos" + essay.research!!.id + essay.id
-        essay.psyPosCsvFileName = "psy_pos" + essay.research!!.id + essay.id
+//        essay.posCsvFileName = "pos" + essay.research!!.id + essay.id
+//        essay.psyPosCsvFileName = "psy_pos" + essay.research!!.id + essay.id
 
-        return essayRepository.save(essay)
+        return Essay.essayToDto(essayRepository.save(essay))
     }
 
     private fun runAnalyzeByPython(fileName: String, researchId: Long, essayId: Long) {
-        //python 파일에 들어갈 args 3가지 추가했음.
-//        val builder = ProcessBuilder(
-//            "python",
-//            "hello.py"
-//        )
-
         val builder = ProcessBuilder(
             "/usr/bin/python3",
             "/home/idpl/plas/plas2/plas/build/libs/extract_morph_analysis.py",
@@ -85,17 +93,19 @@ class EssayService(
         println("들어갔다! $fileName")
     }
 
-    private fun convertStringToFile(essayName: String, context: String?): File {
+    private fun convertStringToFile(essay: Essay): File {
+        val essayName = essay.essayName
+        val context = essay.essayContent
         val absolutePath =
-            ResourceUtils.getFile("result/" + essayName + ", " + LocalDateTime.now() + ".out").absolutePath
+            ResourceUtils.getFile("out/" + essayName + ", " + LocalDateTime.now() + ".out").absolutePath
 
         val file = File(absolutePath)
         file.setWritable(true)
         file.setExecutable(true)
         file.setReadable(true)
-        
+
         file.createNewFile()
-        
+
         file.setWritable(true)
         file.setExecutable(true)
         file.setReadable(true)
@@ -106,9 +116,5 @@ class EssayService(
         fileWriter.close()
 
         return file
-    }
-
-    private fun getResearch(id: Long): Research {
-        return researchRepository.findResearchById(id)!!
     }
 }

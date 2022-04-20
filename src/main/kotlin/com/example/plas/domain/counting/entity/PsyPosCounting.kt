@@ -94,7 +94,7 @@ class PsyPosCounting {
     var z: Int? = null
 
 
-    @ManyToOne
+    @OneToOne
     lateinit var essay: Essay
 
     @ManyToOne
