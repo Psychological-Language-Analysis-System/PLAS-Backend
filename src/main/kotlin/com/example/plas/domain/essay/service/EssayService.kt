@@ -1,6 +1,5 @@
 package com.example.plas.domain.essay.service
 
-import com.example.plas.domain.counting.entity.PosCounting
 import com.example.plas.domain.counting.entity.PosCountingDto
 import com.example.plas.domain.counting.entity.PsyPosCountingDto
 import com.example.plas.domain.counting.repository.PosCountingRepository
@@ -25,7 +24,8 @@ class EssayService(
     private val researchRepository: ResearchRepository,
     private val posCountingRepository: PosCountingRepository,
     private val psyPosCountingRepository: PsyPosCountingRepository,
-    @Value("\${result.save.out}") private val OUT_PATH: String
+    @Value("\${result.save.out}") private val OUT_PATH: String,
+    @Value("\${result.plas.home}") private val HOME: String
 ) {
 
     // TODO: 2022/04/20 csvDto만들어 주기
@@ -41,11 +41,13 @@ class EssayService(
 
     @Transactional
     fun getPosData(essayId: Long):PosCountingDto {
-        return PosCountingDto(posCountingRepository.findById(essayId).orElseThrow())
+        val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
+        return PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException())
     }
 
     fun getPsyposData(essayId: Long):PsyPosCountingDto {
-        return PsyPosCountingDto(psyPosCountingRepository.findById(essayId).orElseThrow())
+        val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
+        return PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException())
     }
 
     fun findEssayPageByResearch(id: Long, page: Int): Page<Essay.SendEssayDto> {
@@ -79,7 +81,7 @@ class EssayService(
     private fun runAnalyzeByPython(fileName: String, researchId: Long, essayId: Long) {
         val builder = ProcessBuilder(
             "/usr/bin/python3",
-            "/home/idpl/plas/plas2/plas/build/libs/extract_morph_analysis.py",
+            "${HOME}extract_morph_analysis.py",
             "--research_id",
             researchId.toString(),
             "--essay_id",
@@ -94,10 +96,10 @@ class EssayService(
     }
 
     private fun convertStringToFile(essay: Essay): File {
-        val essayName = essay.essayName
+        val essayId = essay.id
         val context = essay.essayContent
         val absolutePath =
-            ResourceUtils.getFile("out/" + essayName + ", " + LocalDateTime.now() + ".out").absolutePath
+            ResourceUtils.getFile("out/" + essayId + LocalDateTime.now() + ".out").absolutePath
 
         val file = File(absolutePath)
         file.setWritable(true)
