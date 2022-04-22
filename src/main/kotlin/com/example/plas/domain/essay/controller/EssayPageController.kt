@@ -30,18 +30,6 @@ class EssayPageController(
         return ResponseEntity.status(HttpStatus.OK).body(essayService.saveEssay(dto))
     }
 
-//    @ApiOperation(value = "essay pos 분석 결과 csv파일로 저장")
-    @GetMapping("/downloadPos/{essayId}")
-    fun getPosCsvFile(@PathVariable essayId: Long, response: HttpServletResponse) {
-        val posCsvFile = essayService.getPosCsvFile(essayId)
-        response.contentType = "application/octet-stream"
-        response.setHeader("Content-Disposition", "attachment; fileName=\"")
-        response.setHeader("Content-Transfer-Encoding", "binary")
-        response.outputStream.write(posCsvFile)
-        response.outputStream.flush()
-        response.outputStream.close()
-    }
-
     @GetMapping("/pos/{essayId}")
     fun getPosData(@PathVariable essayId: Long): ResponseEntity<PosCountingDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getPosData(essayId))
@@ -51,16 +39,9 @@ class EssayPageController(
     fun getPsyposData(@PathVariable essayId: Long): ResponseEntity<PsyPosCountingDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getPsyposData(essayId))
     }
-//    @ApiOperation(value = "essay psypos 분석 결과 csv파일로 저장")
-    @GetMapping("/downloadPsyPos/{essayId}")
-    fun getPsyPosCsvFile(@PathVariable essayId: Long, response: HttpServletResponse) {
-        val psyPosCsvFile = essayService.getPsyPosCsvFile(essayId)
-        response.contentType = "application/octet-stream"
-        response.setHeader("Content-Disposition", "attachment; fileName=\"")
-        response.setHeader("Content-Transfer-Encoding", "binary");
-        response.outputStream.write(psyPosCsvFile)
-        response.outputStream.flush()
-        response.outputStream.close()
 
+    @GetMapping
+    fun getEssayInfo(@RequestParam essayId: Long): ResponseEntity<Essay.EssayDetailDto> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.findEssay(essayId))
     }
 }

@@ -29,34 +29,29 @@ class EssayService(
     @Value("\${result.plas.home}") private val HOME: String
 ) {
 
-    // TODO: 2022/04/20 csvDto만들어 주기
-    fun getPosCsvFile(essayId: Long): ByteArray {
-        val essay = essayRepository.findEssayById(essayId)!!
-        return FileUtils.readFileToByteArray(File(OUT_PATH + essay.posCsvFileName + ".csv"))
-    }
-
-    fun getPsyPosCsvFile(essayId: Long): ByteArray {
-        val essay = essayRepository.findEssayById(essayId)!!
-        return FileUtils.readFileToByteArray(File(OUT_PATH + essay.psyPosCsvFileName + ".csv"))
-    }
-
-    @Transactional
+    @Transactional(readOnly = true)
     fun getPosData(essayId: Long):PosCountingDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
         return PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException())
     }
 
+    @Transactional(readOnly = true)
     fun getPsyposData(essayId: Long):PsyPosCountingDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
         return PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException())
     }
 
+    @Transactional(readOnly = true)
     fun findEssayPageByResearch(id: Long, page: Int): Page<Essay.SendEssayDto> {
         val research = researchRepository.findById(id).orElseThrow()
         return essayRepository.findAllEssayByResearch(research, PageRequest.of(page, 10, Sort.by("id").descending()))
     }
 
-    //@Transactional
+    fun findEssay(id: Long): Essay.EssayDetailDto {
+        return Essay.essayToDetailDto(essayRepository.findEssayById(id) ?: throw RuntimeException())
+    }
+
+    @Transactional
     fun saveEssay(dto: Essay.SaveEssayDto): Essay.EssayDetailDto {
         val research = researchRepository.findResearchById(dto.researchId!!) ?: throw RuntimeException()
         var essay = Essay.dtoToEssay(dto)
