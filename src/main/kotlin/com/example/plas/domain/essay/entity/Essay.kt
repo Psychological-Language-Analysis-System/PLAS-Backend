@@ -13,8 +13,8 @@ class Essay() {
         fun dtoToEssay(dto: SaveEssayDto): Essay {
             return Essay(dto.essayName, dto.memo, dto.essayAuthor, dto.essayFrom, dto.essayType)
         }
-        fun essayToDto(essay: Essay): SendEssayDto {
-            return SendEssayDto(essay.id, essay.essayName)
+        fun essayToDetailDto(essay: Essay): EssayDetailDto {
+            return EssayDetailDto(essay.id, essay.essayName, essay.essayAuthor, essay.essayFrom, essay.essayType, essay.research!!.id, essay.essayContent)
         }
     }
 
@@ -63,6 +63,16 @@ class Essay() {
     data class SendEssayDto(
         var id: Long?,
         var essayName: String?
+    )
+
+    data class EssayDetailDto(
+        var id: Long?,
+        var essayName: String?,
+        var essayAuthor: String?,
+        var essayFrom: String?,
+        var essayType: String?,
+        var researchId: Long?,
+        var essayContent: String?,
     )
 
 //    data class CsvFilesDto
