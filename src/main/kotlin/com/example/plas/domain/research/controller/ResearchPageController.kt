@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletRequest
 
 @RestController
-@RequestMapping("/research")
+@RequestMapping("/api/research")
 class ResearchPageController(
     private val researchService: ResearchService
 ) {

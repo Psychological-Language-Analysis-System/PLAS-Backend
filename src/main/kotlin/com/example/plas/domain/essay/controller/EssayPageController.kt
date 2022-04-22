@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletResponse
 
 @RestController
-@RequestMapping("/essay")
+@RequestMapping("/api/essay")
 class EssayPageController(
     private val essayService: EssayService
 ) {
