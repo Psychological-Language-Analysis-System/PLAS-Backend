@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.ResourceUtils
@@ -52,15 +53,11 @@ class EssayService(
 
     fun findEssayPageByResearch(id: Long, page: Int): Page<Essay.SendEssayDto> {
         val research = researchRepository.findById(id).orElseThrow()
-        return essayRepository.findAllEssayByResearch(research, PageRequest.of(page, 10))
+        return essayRepository.findAllEssayByResearch(research, PageRequest.of(page, 10, Sort.by("id").descending()))
     }
 
     //@Transactional
-    fun saveEssay(dto: Essay.SaveEssayDto): Essay.SendEssayDto {
-        // 1. essayContent와 essayContentByFile 중에 있는 데이터를 파일로 만든다.
-        // 2. file이 들어왔다면 그대로 사용. content가 있다면, 이를 파일로 만들기
-        // 3. 파이썬 파일에 input.txt의 경로를 설정해서 주기
-
+    fun saveEssay(dto: Essay.SaveEssayDto): Essay.EssayDetailDto {
         val research = researchRepository.findResearchById(dto.researchId!!) ?: throw RuntimeException()
         var essay = Essay.dtoToEssay(dto)
         essay.research = research
@@ -72,10 +69,7 @@ class EssayService(
 
         runAnalyzeByPython(essay.fileName!!, research.id!!, essay.id!!)
 
-//        essay.posCsvFileName = "pos" + essay.research!!.id + essay.id
-//        essay.psyPosCsvFileName = "psy_pos" + essay.research!!.id + essay.id
-
-        return Essay.essayToDto(essayRepository.save(essay))
+        return Essay.essayToDetailDto(essayRepository.save(essay))
     }
 
     private fun runAnalyzeByPython(fileName: String, researchId: Long, essayId: Long) {
