@@ -4,7 +4,7 @@ import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.research.entity.Research
 import javax.persistence.*
 
-class PsyPosCountingDto {
+class PsyPosCountingDto(psyPosCounting: PsyPosCounting) {
     var essayId: Long? = 0
 
     var psySentence: Int? = null
@@ -85,10 +85,12 @@ class PsyPosCountingDto {
     var j11: Int? = null
     var j12: Int? = null
     var k1: Int? = null
+    var l1: Int? = null
+    var m1: Int? = null
+    var n1: Int? = null
+    var z: Int? = null
 
-    constructor(
-        psyPosCounting: PsyPosCounting
-    ) {
+    init {
         this.essayId = psyPosCounting.essay.id
         this.psySentence = psyPosCounting.psySentence
         this.psyWord = psyPosCounting.psyWord
@@ -172,9 +174,4 @@ class PsyPosCountingDto {
         this.n1 = psyPosCounting.n1
         this.z = psyPosCounting.z
     }
-
-    var l1: Int? = null
-    var m1: Int? = null
-    var n1: Int? = null
-    var z: Int? = null
 }

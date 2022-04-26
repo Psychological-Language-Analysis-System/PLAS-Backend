@@ -7,6 +7,26 @@ import javax.persistence.*
 @Entity
 class PosCounting {
 
+    companion object {
+        fun dtoToResultResponseDto(posCountingDto: PosCountingDto): ResultResponseDto {
+            val columnList = ArrayList<Any>()
+            val valueList = ArrayList<Any>()
+
+            val fields = posCountingDto.javaClass.declaredFields
+            for (field in fields) {
+                val name = field.name.uppercase().substring(0, 1) + field.name.substring(1)
+                val methodName = "get$name"
+
+                val method = posCountingDto.javaClass.getMethod(methodName)
+                val invoke = method.invoke(posCountingDto) ?: "null"
+
+                columnList.add(field.name)
+                valueList.add(invoke)
+            }
+            return ResultResponseDto(columnList, valueList)
+        }
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = 0

@@ -6,6 +6,27 @@ import javax.persistence.*
 
 @Entity
 class PsyPosCounting {
+
+    companion object {
+        fun dtoToResultResponseDto(psyPosCountingDto: PsyPosCountingDto): ResultResponseDto {
+            val columnList = ArrayList<Any>()
+            val valueList = ArrayList<Any>()
+
+            val fields = psyPosCountingDto.javaClass.declaredFields
+            for (field in fields) {
+                val name = field.name.uppercase().substring(0, 1) + field.name.substring(1)
+                val methodName = "get$name"
+
+                val method = psyPosCountingDto.javaClass.getMethod(methodName)
+                val invoke = method.invoke(psyPosCountingDto) ?: "null"
+
+                columnList.add(field.name)
+                valueList.add(invoke)
+            }
+            return ResultResponseDto(columnList, valueList)
+        }
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = 0

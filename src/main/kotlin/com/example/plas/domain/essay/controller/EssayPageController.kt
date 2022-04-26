@@ -3,6 +3,7 @@ package com.example.plas.domain.essay.controller
 import com.example.plas.domain.counting.entity.PosCounting
 import com.example.plas.domain.counting.entity.PosCountingDto
 import com.example.plas.domain.counting.entity.PsyPosCountingDto
+import com.example.plas.domain.counting.entity.ResultResponseDto
 import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.essay.service.EssayService
 import io.swagger.v3.oas.annotations.Operation
@@ -31,12 +32,12 @@ class EssayPageController(
     }
 
     @GetMapping("/pos/{essayId}")
-    fun getPosData(@PathVariable essayId: Long): ResponseEntity<PosCountingDto> {
+    fun getPosData(@PathVariable essayId: Long): ResponseEntity<ResultResponseDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getPosData(essayId))
     }
 
     @GetMapping("/psyPos/{essayId}")
-    fun getPsyposData(@PathVariable essayId: Long): ResponseEntity<PsyPosCountingDto> {
+    fun getPsyposData(@PathVariable essayId: Long): ResponseEntity<ResultResponseDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getPsyposData(essayId))
     }
 
@@ -44,4 +45,5 @@ class EssayPageController(
     fun getEssayInfo(@RequestParam essayId: Long): ResponseEntity<Essay.EssayDetailDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.findEssay(essayId))
     }
+
 }

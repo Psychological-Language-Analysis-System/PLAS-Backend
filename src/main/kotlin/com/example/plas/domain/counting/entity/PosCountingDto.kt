@@ -1,10 +1,6 @@
 package com.example.plas.domain.counting.entity
 
-import com.example.plas.domain.essay.entity.Essay
-import com.example.plas.domain.research.entity.Research
-import javax.persistence.*
-
-class PosCountingDto {
+class PosCountingDto(posCounting: PosCounting) {
     var essayId: Long? = null
 
     var posSentence: Int? = null
@@ -76,10 +72,14 @@ class PosCountingDto {
     var sf: Int? = null
     var sp: Int? = null
     var sl: Int? = null
+    var sr: Int? = null
+    var se: Int? = null
+    var sd: Int? = null
+    var su: Int? = null
+    var sy: Int? = null
+    var f: Int? = null
 
-    constructor(
-        posCounting: PosCounting
-    ) {
+    init {
         this.essayId = posCounting.essay.id
         this.posSentence = posCounting.posSentence
         this.pstWord = posCounting.pstWord
@@ -156,11 +156,4 @@ class PosCountingDto {
         this.sy = posCounting.sy
         this.f = posCounting.f
     }
-
-    var sr: Int? = null
-    var se: Int? = null
-    var sd: Int? = null
-    var su: Int? = null
-    var sy: Int? = null
-    var f: Int? = null
 }

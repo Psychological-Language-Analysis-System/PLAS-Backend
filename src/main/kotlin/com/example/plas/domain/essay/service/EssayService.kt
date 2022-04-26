@@ -1,7 +1,6 @@
 package com.example.plas.domain.essay.service
 
-import com.example.plas.domain.counting.entity.PosCountingDto
-import com.example.plas.domain.counting.entity.PsyPosCountingDto
+import com.example.plas.domain.counting.entity.*
 import com.example.plas.domain.counting.repository.PosCountingRepository
 import com.example.plas.domain.counting.repository.PsyPosCountingRepository
 import com.example.plas.domain.essay.entity.Essay
@@ -30,15 +29,15 @@ class EssayService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getPosData(essayId: Long):PosCountingDto {
+    fun getPosData(essayId: Long): ResultResponseDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
-        return PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException())
+        return PosCounting.dtoToResultResponseDto(PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException()))
     }
 
     @Transactional(readOnly = true)
-    fun getPsyposData(essayId: Long):PsyPosCountingDto {
+    fun getPsyposData(essayId: Long):ResultResponseDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
-        return PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException())
+        return PsyPosCounting.dtoToResultResponseDto(PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException()))
     }
 
     @Transactional(readOnly = true)
