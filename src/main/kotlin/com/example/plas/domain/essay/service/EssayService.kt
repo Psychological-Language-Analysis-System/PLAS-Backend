@@ -24,20 +24,41 @@ class EssayService(
     private val researchRepository: ResearchRepository,
     private val posCountingRepository: PosCountingRepository,
     private val psyPosCountingRepository: PsyPosCountingRepository,
-    @Value("\${result.save.out}") private val OUT_PATH: String,
     @Value("\${result.plas.home}") private val HOME: String
 ) {
 
     @Transactional(readOnly = true)
     fun getPosData(essayId: Long): ResultResponseDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
-        return PosCounting.dtoToResultResponseDto(PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException()))
+        return PosCounting.dtoToResultResponseDto(PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException()), essay.essayName!!)
     }
 
     @Transactional(readOnly = true)
     fun getPsyposData(essayId: Long):ResultResponseDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
-        return PsyPosCounting.dtoToResultResponseDto(PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException()))
+        return PsyPosCounting.dtoToResultResponseDto(PsyPosCountingDto(psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException()), essay.essayName!!)
+    }
+
+    @Transactional(readOnly = true)
+    fun getAllPsyposData(researchId: Long): ArrayList<ResultResponseDto> {
+        val research = researchRepository.findResearchById(researchId) ?: throw RuntimeException()
+        val essayList = essayRepository.findAllEssayByResearch(research)
+        val resultList = ArrayList<ResultResponseDto>()
+
+        for(essay in essayList) resultList.add(getPsyposData(essay.id!!))
+
+        return resultList
+    }
+
+    @Transactional(readOnly = true)
+    fun getAllPosData(researchId: Long): ArrayList<ResultResponseDto> {
+        val research = researchRepository.findResearchById(researchId) ?: throw RuntimeException()
+        val essayList = essayRepository.findAllEssayByResearch(research)
+        val resultList = ArrayList<ResultResponseDto>()
+
+        for(essay in essayList) resultList.add(getPosData(essay.id!!))
+
+        return resultList
     }
 
     @Transactional(readOnly = true)

@@ -20,7 +20,6 @@ class Essay() {
 
     constructor(essayName: String?, memo: String?, essayAuthor: String?, essayFrom: String?, essayType: String?): this() {
         this.essayName = essayName
-        this.fileName = fileName
         this.memo = memo
         this.essayAuthor = essayAuthor
         this.essayFrom = essayFrom

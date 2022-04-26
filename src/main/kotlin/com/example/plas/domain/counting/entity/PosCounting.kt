@@ -8,7 +8,7 @@ import javax.persistence.*
 class PosCounting {
 
     companion object {
-        fun dtoToResultResponseDto(posCountingDto: PosCountingDto): ResultResponseDto {
+        fun dtoToResultResponseDto(posCountingDto: PosCountingDto, title: String): ResultResponseDto {
             val columnList = ArrayList<Any>()
             val valueList = ArrayList<Any>()
 
@@ -23,8 +23,9 @@ class PosCounting {
                 columnList.add(field.name)
                 valueList.add(invoke)
             }
-            return ResultResponseDto(columnList, valueList)
+            return ResultResponseDto(title, columnList, valueList)
         }
+
     }
 
     @Id

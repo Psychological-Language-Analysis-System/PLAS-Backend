@@ -31,6 +31,16 @@ class EssayPageController(
         return ResponseEntity.status(HttpStatus.OK).body(essayService.saveEssay(dto))
     }
 
+    @GetMapping("/downloads/pos/{researchId}")
+    fun getAllPosData(@PathVariable researchId: Long): ResponseEntity<ArrayList<ResultResponseDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.getAllPosData(researchId))
+    }
+
+    @GetMapping("/downloads/psypos/{researchId}")
+    fun getAllPsyposData(@PathVariable researchId: Long): ResponseEntity<ArrayList<ResultResponseDto>> {
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.getAllPsyposData(researchId))
+    }
+
     @GetMapping("/pos/{essayId}")
     fun getPosData(@PathVariable essayId: Long): ResponseEntity<ResultResponseDto> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getPosData(essayId))

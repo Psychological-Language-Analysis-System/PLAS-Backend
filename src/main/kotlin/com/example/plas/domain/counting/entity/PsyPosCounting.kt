@@ -8,7 +8,7 @@ import javax.persistence.*
 class PsyPosCounting {
 
     companion object {
-        fun dtoToResultResponseDto(psyPosCountingDto: PsyPosCountingDto): ResultResponseDto {
+        fun dtoToResultResponseDto(psyPosCountingDto: PsyPosCountingDto, title: String): ResultResponseDto {
             val columnList = ArrayList<Any>()
             val valueList = ArrayList<Any>()
 
@@ -23,7 +23,7 @@ class PsyPosCounting {
                 columnList.add(field.name)
                 valueList.add(invoke)
             }
-            return ResultResponseDto(columnList, valueList)
+            return ResultResponseDto(title, columnList, valueList)
         }
     }
 
