@@ -72,8 +72,9 @@ class EssayService(
     }
 
     @Transactional
-    fun saveEssay(dto: Essay.SaveEssayDto): Essay.EssayDetailDto {
+    fun saveEssay(dto: Essay.SaveEssayDto, researchId: Long): Essay.EssayDetailDto {
         val research = researchRepository.findResearchById(dto.researchId!!) ?: throw RuntimeException()
+        dto.researchId = researchId
         var essay = Essay.dtoToEssay(dto)
         essay.research = research
 

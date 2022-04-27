@@ -28,7 +28,7 @@ class EssayPageController(
 
     @PostMapping("/{researchId}")
     fun saveEssay(@PathVariable researchId: Long, dto: Essay.SaveEssayDto): ResponseEntity<Essay.EssayDetailDto> {
-        return ResponseEntity.status(HttpStatus.OK).body(essayService.saveEssay(dto))
+        return ResponseEntity.status(HttpStatus.OK).body(essayService.saveEssay(dto, researchId))
     }
 
     @GetMapping("/downloads/pos/{researchId}")
