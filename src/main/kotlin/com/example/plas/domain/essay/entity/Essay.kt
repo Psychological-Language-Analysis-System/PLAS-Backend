@@ -14,7 +14,7 @@ class Essay() {
             return Essay(dto.essayName, dto.memo, dto.essayAuthor, dto.essayFrom, dto.essayType)
         }
         fun essayToDetailDto(essay: Essay): EssayDetailDto {
-            return EssayDetailDto(essay.id, essay.essayName, essay.essayAuthor, essay.essayFrom, essay.essayType, essay.research!!.id, essay.essayContent)
+            return EssayDetailDto(essay.id, essay.essayName, essay.essayAuthor, essay.essayFrom, essay.essayType, essay.memo, essay.research!!.id, essay.essayContent)
         }
     }
 
@@ -69,6 +69,7 @@ class Essay() {
         var essayName: String?,
         var essayAuthor: String?,
         var essayFrom: String?,
+        var essayMemo: String?,
         var essayType: String?,
         var researchId: Long?,
         var essayContent: String?,
