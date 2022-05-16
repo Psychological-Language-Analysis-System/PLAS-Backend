@@ -22,7 +22,7 @@ class EssayPageController(
 ) {
     @Operation(summary = "test hello", description = "esssssay")
     @GetMapping("/{researchId}")
-    fun essayPage(@PathVariable researchId: Long, page: Int): ResponseEntity<Page<Essay.SendEssayDto>> {
+    fun essayPage(@PathVariable researchId: Long, page: Int): ResponseEntity<List<Essay.SendEssayDto>> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.findEssayPageByResearch(researchId, page))
     }
 

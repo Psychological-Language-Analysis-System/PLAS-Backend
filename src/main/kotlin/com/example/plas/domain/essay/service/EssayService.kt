@@ -62,7 +62,7 @@ class EssayService(
     }
 
     @Transactional(readOnly = true)
-    fun findEssayPageByResearch(id: Long, page: Int): Page<Essay.SendEssayDto> {
+    fun findEssayPageByResearch(id: Long, page: Int): List<Essay.SendEssayDto> {
         val research = researchRepository.findById(id).orElseThrow()
         return essayRepository.findAllEssayByResearch(research, PageRequest.of(page, 10, Sort.by("id").descending()))
     }

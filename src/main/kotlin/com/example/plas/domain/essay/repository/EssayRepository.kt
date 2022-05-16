@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface EssayRepository: JpaRepository<Essay, Long> {
-    fun findAllEssayByResearch(research: Research, pageable: Pageable): Page<Essay.SendEssayDto>
+    fun findAllEssayByResearch(research: Research, pageable: Pageable): List<Essay.SendEssayDto>
     fun findAllEssayByResearch(research: Research): ArrayList<Essay>
     fun findEssayById(id: Long): Essay?
 }
