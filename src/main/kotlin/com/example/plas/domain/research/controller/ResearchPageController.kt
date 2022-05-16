@@ -3,6 +3,7 @@ package com.example.plas.domain.research.controller
 import com.example.plas.domain.research.entity.Research
 import com.example.plas.domain.research.entity.SendResearchDto
 import com.example.plas.domain.research.service.ResearchService
+import com.example.plas.dto.PageDto
 import com.example.plas.utils.ControllerUtil
 import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
@@ -21,7 +22,7 @@ class ResearchPageController(
     fun researchPage(
         request: HttpServletRequest,
         page: Int
-    ): ResponseEntity<Page<SendResearchDto>> {
+    ): ResponseEntity<PageDto<SendResearchDto>> {
         val token = ControllerUtil.extractAccessToken(request)
         return ResponseEntity.status(HttpStatus.OK).body(researchService.findAllPages(page, token))
     }

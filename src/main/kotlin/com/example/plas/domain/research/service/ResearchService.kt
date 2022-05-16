@@ -3,6 +3,7 @@ package com.example.plas.domain.research.service
 import com.example.plas.domain.research.entity.Research
 import com.example.plas.domain.research.entity.SendResearchDto
 import com.example.plas.domain.research.repository.ResearchRepository
+import com.example.plas.dto.PageDto
 import com.example.plas.security.JwtProvider
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -18,9 +19,12 @@ class ResearchService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAllPages(page: Int, token: String): Page<SendResearchDto> {
+    fun findAllPages(page: Int, token: String): PageDto<SendResearchDto> {
         val account = jwtProvider.getAccountFromToken(token) ?: throw RuntimeException()
-        return researchRepository.findAllByAccount(account, PageRequest.of(page, 10, Sort.by("id").descending()))
+        val researchPage =
+            researchRepository.findAllByAccount(account, PageRequest.of(page, 10, Sort.by("id").descending()))
+
+        return PageDto(researchPage)
     }
 
     fun saveResearch(dto: Research.SaveResearchDto, token: String): SendResearchDto {
