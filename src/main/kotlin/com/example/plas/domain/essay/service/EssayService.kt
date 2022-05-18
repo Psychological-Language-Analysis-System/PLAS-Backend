@@ -6,9 +6,8 @@ import com.example.plas.domain.counting.repository.PsyPosCountingRepository
 import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.essay.repository.EssayRepository
 import com.example.plas.domain.research.repository.ResearchRepository
-import org.apache.commons.io.FileUtils
+import com.example.plas.dto.CountingDto
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -31,12 +30,12 @@ class EssayService(
     fun getPosData(essayId: Long): PosCountingDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
         val posCounting = posCountingRepository.findByEssay(essay) ?: throw RuntimeException()
-        return  PosCountingDto(posCounting)
+        return PosCountingDto(posCounting)
 //        return PosCounting.dtoToResultResponseDto(PosCountingDto(posCountingRepository.findByEssay(essay) ?: throw  RuntimeException()), essay.essayName!!)
     }
 
     @Transactional(readOnly = true)
-    fun getPsyposData(essayId: Long):PsyPosCountingDto {
+    fun getPsyposData(essayId: Long): PsyPosCountingDto {
         val essay = essayRepository.findEssayById(essayId) ?: throw RuntimeException()
         val psyPosCounting = psyPosCountingRepository.findByEssay(essay) ?: throw RuntimeException()
         return PsyPosCountingDto(psyPosCounting)
@@ -44,23 +43,35 @@ class EssayService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllPsyposData(researchId: Long): ArrayList<PsyPosCountingDto> {
+    fun getAllPsyposData(researchId: Long): ArrayList<CountingDto.ResponsePsyPosDto> {
         val research = researchRepository.findResearchById(researchId) ?: throw RuntimeException()
         val essayList = essayRepository.findAllEssayByResearch(research)
-        val resultList = ArrayList<PsyPosCountingDto>()
+        val resultList = ArrayList<CountingDto.ResponsePsyPosDto>()
 
-        for(essay in essayList) resultList.add(getPsyposData(essay.id!!))
+        for (essay in essayList) resultList.add(
+            CountingDto.ResponsePsyPosDto(
+                essay.id!!,
+                essay.essayName!!,
+                getPsyposData(essay.id!!)
+            )
+        )
 
         return resultList
     }
 
     @Transactional(readOnly = true)
-    fun getAllPosData(researchId: Long): ArrayList<PosCountingDto> {
+    fun getAllPosData(researchId: Long): ArrayList<CountingDto.ResponsePosDto> {
         val research = researchRepository.findResearchById(researchId) ?: throw RuntimeException()
         val essayList = essayRepository.findAllEssayByResearch(research)
-        val resultList = ArrayList<PosCountingDto>()
+        val resultList = ArrayList<CountingDto.ResponsePosDto>()
 
-        for(essay in essayList) resultList.add(getPosData(essay.id!!))
+        for (essay in essayList) resultList.add(
+            CountingDto.ResponsePosDto(
+                essay.id!!,
+                essay.essayName!!,
+                getPosData(essay.id!!)
+            )
+        )
 
         return resultList
     }

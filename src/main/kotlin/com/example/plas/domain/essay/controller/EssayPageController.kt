@@ -4,6 +4,7 @@ import com.example.plas.domain.counting.entity.PosCountingDto
 import com.example.plas.domain.counting.entity.PsyPosCountingDto
 import com.example.plas.domain.essay.entity.Essay
 import com.example.plas.domain.essay.service.EssayService
+import com.example.plas.dto.CountingDto
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,12 +27,12 @@ class EssayPageController(
     }
 
     @GetMapping("/downloads/pos/{researchId}")
-    fun getAllPosData(@PathVariable researchId: Long): ResponseEntity<ArrayList<PosCountingDto>> {
+    fun getAllPosData(@PathVariable researchId: Long): ResponseEntity<ArrayList<CountingDto.ResponsePosDto>> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getAllPosData(researchId))
     }
 
     @GetMapping("/downloads/psypos/{researchId}")
-    fun getAllPsyposData(@PathVariable researchId: Long): ResponseEntity<ArrayList<PsyPosCountingDto>> {
+    fun getAllPsyposData(@PathVariable researchId: Long): ResponseEntity<ArrayList<CountingDto.ResponsePsyPosDto>> {
         return ResponseEntity.status(HttpStatus.OK).body(essayService.getAllPsyposData(researchId))
     }
 
